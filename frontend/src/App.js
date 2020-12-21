@@ -30,7 +30,7 @@ function App() {
          },
        }) 
        setUserData({
-         token,
+         token: token,
          user: userRes.data,
        })
       }

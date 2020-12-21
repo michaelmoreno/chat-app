@@ -12,7 +12,7 @@ router.post('/register', async (req, res) => {
   try {
     let { email, password, passwordCheck, displayName } = req.body;
     
-    // VALIDATION
+    VALIDATION
     if (!(email && password && passwordCheck)) {
       return res.status(400).json({msg: "Required fields missing."})
     }
@@ -43,11 +43,10 @@ router.post('/register', async (req, res) => {
     res.json(newUser);
 
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({error: err.message });
   }
 })
 
- 
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -72,8 +71,7 @@ router.post('/login', async (req, res) => {
       token,
       user: {
         id: user._id,
-        displayName: user.displayName,
-        email: user.email,
+        displayName: user.displayName
       }
     })
     
