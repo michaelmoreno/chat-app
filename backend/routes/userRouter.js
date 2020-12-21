@@ -47,6 +47,7 @@ router.post('/register', async (req, res) => {
   }
 })
 
+ 
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -55,16 +56,17 @@ router.post('/login', async (req, res) => {
     if (!(email && password)) {
       return res.status(400).json({ msg: "Missing fields."})
     }
-
+    // QUERY USER
     const user = await User.findOne({email: email});
     if(!user) {
       return res.status(400).json({ msg: "Account does not exist"})
     }
+    // AUTHENTICATE PASSWORD
     const passwordsMatch = await bcrypt.compare(password, user.password)
     if (!passwordsMatch) {
       return res.status(400).json({ msg: "Invalid credentials."})
     }
-    
+    // ISSUE TOKEN
     const token = jwt.sign({id: user._id}, process.env.JWT_SECRET);
     res.json({
       token,
@@ -81,6 +83,7 @@ router.post('/login', async (req, res) => {
 
 })
 
+// DELETE USER
 router.delete('/delete', auth, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user);
@@ -90,6 +93,7 @@ router.delete('/delete', auth, async (req, res) => {
   }
 })
 
+// AUTHENTICATE TOKEN 
 router.post('/tokenIsValid', async (req, res) => {
   try {
     const token = req.header("x-auth-token")
@@ -105,6 +109,15 @@ router.post('/tokenIsValid', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message})
   }
+})
+
+// GIVE USER DATA
+router.get('/', auth, async (req, res) => {
+  const user = await User.findById(req.user);
+  res.json({
+    displayName: user.displayName,
+    id: user._id,
+  });
 })
 
 module.exports = router;
